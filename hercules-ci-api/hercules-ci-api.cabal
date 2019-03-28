@@ -25,12 +25,12 @@ library
       Hercules.API.Agent.Build.BuildEvent
       Hercules.API.Agent.Build.BuildTask
       Hercules.API.Agents
-      Hercules.API.Agents.Agent
-      Hercules.API.Agents.AgentCreated
-      Hercules.API.Agents.AgentToken
-      Hercules.API.Agents.CreateAgent
-      Hercules.API.Agents.CreateAgentToken
-      Hercules.API.Agents.FullAgentToken
+      Hercules.API.Agents.AgentSession
+      Hercules.API.Agents.AgentSessionCreated
+      Hercules.API.Agents.ClusterJoinToken
+      Hercules.API.Agents.CreateAgentSession
+      Hercules.API.Agents.CreateClusterJoinToken
+      Hercules.API.Agents.FullClusterJoinToken
       Hercules.API.AgentTask
       Hercules.API.Attribute
       Hercules.API.Auth
@@ -86,7 +86,6 @@ library
     , servant-swagger-ui-core
     , string-conv
     , swagger2
-    , systemd
     , text
     , time
     , uuid
@@ -120,7 +119,6 @@ executable hercules-gen-swagger
     , servant-swagger-ui-core
     , string-conv
     , swagger2
-    , systemd
     , text
     , time
     , uuid
@@ -158,9 +156,7 @@ test-suite hercules-api-test
     , servant-swagger-ui-core
     , string-conv
     , swagger2
-    , systemd
     , text
     , time
     , uuid
   default-language: Haskell2010
-  build-tool-depends: hspec-discover:hspec-discover
