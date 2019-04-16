@@ -1,4 +1,3 @@
-{-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE DeriveAnyClass #-}
 module Hercules.API.Projects.Job where
 
@@ -21,7 +20,7 @@ data Job = Job
   , jobStatus :: JobStatus
   , evaluationStatus :: JobStatus
   , derivationStatus :: JobStatus
-  , evaluation :: Evaluation
+  , evaluationId :: Id Evaluation
   }
   deriving (Generic, Show, Eq, ToJSON, FromJSON, ToSchema)
 

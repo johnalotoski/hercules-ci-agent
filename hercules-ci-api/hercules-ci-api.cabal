@@ -10,7 +10,7 @@ copyright:      2018-2019 Hercules Labs OÜ
 license:        Apache-2.0
 build-type:     Simple
 extra-source-files:
-    ChangeLog.md
+    CHANGELOG.md
 
 source-repository head
   type: git
@@ -35,6 +35,7 @@ library
       Hercules.API.Attribute
       Hercules.API.Auth
       Hercules.API.Build
+      Hercules.API.Build.EvaluationDetail
       Hercules.API.Derivation
       Hercules.API.EvaluateEvent
       Hercules.API.EvaluateEvent.AttributeErrorEvent
