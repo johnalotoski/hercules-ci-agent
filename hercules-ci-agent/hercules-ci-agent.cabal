@@ -1,7 +1,7 @@
 cabal-version: 1.12
 
 name:           hercules-ci-agent
-version:        0.1.1
+version:        0.2
 homepage:       https://docs.hercules-ci.com
 bug-reports:    https://github.com/hercules-ci/hercules-ci-agent/issues
 author:         Hercules Labs
@@ -63,7 +63,10 @@ executable hercules-ci-agent
       Hercules.Agent.Client
       Hercules.Agent.Config
       Hercules.Agent.Env
+      Hercules.Agent.EnvironmentInfo
       Hercules.Agent.Evaluate
+      Hercules.Agent.Evaluate.TraversalQueue
+      Hercules.Agent.Evaluate.RetrieveDerivationInfo
       Hercules.Agent.Exception
       Hercules.Agent.Init
       Hercules.Agent.Log
@@ -76,14 +79,16 @@ executable hercules-ci-agent
   hs-source-dirs:
       hercules-ci-agent
   default-extensions: DeriveGeneric DeriveTraversable DisambiguateRecordFields FlexibleContexts InstanceSigs LambdaCase MultiParamTypeClasses NoImplicitPrelude OverloadedStrings RankNTypes TupleSections TypeApplications TypeOperators
-  ghc-options: -Wall -fwarn-tabs -fwarn-unused-imports -fwarn-missing-signatures -fwarn-name-shadowing -fwarn-incomplete-patterns -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -Wall -fwarn-tabs -fwarn-unused-imports -fwarn-missing-signatures -fwarn-name-shadowing -fwarn-incomplete-patterns -threaded -rtsopts -with-rtsopts=-maxN8
   build-depends:
       aeson
     , async
+    , attoparsec
     , base >=4.7 && <5
     , binary
     , binary-conduit
     , bytestring
+    , cachix
     , conduit
     , conduit-extra
     , containers
@@ -93,14 +98,18 @@ executable hercules-ci-agent
     , filepath
     , hercules-ci-agent
     , hercules-ci-api
+    , hostname
     , http-client
     , http-client-tls
     , http-conduit
     , katip
+    , lens
+    , lens-aeson
     , lifted-async
     , lifted-base
     , monad-control
     , mtl
+    , nix-derivation
     , network
     , optparse-applicative
     , process
@@ -110,6 +119,8 @@ executable hercules-ci-agent
     , servant-auth-client
     , servant-client
     , servant-client-core
+    , stm
+    , system-filepath
     , temporary
     , text
     , transformers-base
@@ -128,10 +139,21 @@ executable hercules-ci-agent-worker
   hs-source-dirs:
       hercules-ci-agent-worker
   default-extensions: DeriveGeneric DeriveTraversable DisambiguateRecordFields FlexibleContexts InstanceSigs LambdaCase MultiParamTypeClasses NoImplicitPrelude OverloadedStrings RankNTypes TupleSections TypeApplications TypeOperators
-  ghc-options: -Wall -fwarn-tabs -fwarn-unused-imports -fwarn-missing-signatures -fwarn-name-shadowing -fwarn-incomplete-patterns -threaded -rtsopts -with-rtsopts=-N
-  -- GC_INCLUDE_NEW to use <new> header and standard C++ exception on OOM
-  cc-options: -Wall -std=c++11
-  ld-options: -lstdc++
+  ghc-options:
+    -Wall
+    -fwarn-tabs
+    -fwarn-unused-imports
+    -fwarn-missing-signatures
+    -fwarn-name-shadowing
+    -fwarn-incomplete-patterns
+    -threaded
+    -rtsopts
+    -with-rtsopts=-maxN8
+    -- match what Nix is using
+    -optc=-std=c++14
+  if os(darwin)
+    ghc-options: -pgmc=clang++
+  cc-options: -Wall
   include-dirs:
       cbits
   extra-libraries:
