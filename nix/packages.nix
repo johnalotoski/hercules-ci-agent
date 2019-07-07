@@ -20,28 +20,26 @@ let
     inherit pkgs;
 
     # TODO: upstream the overrides
-    haskellPackages = haskellPackages_.extend (self: super:
-     optionalAttrs (!super ? servant-conduit) {
-      cachix = super.callHackage "cachix" "0.1.2" {};
-      cachix-api = super.callHackage "cachix-api" "0.1.0.2" {};
-     } // {
-      #cachix = super.callCabal2nix "cachix" (sources.cachix + "/cachix") {};
+    haskellPackages = haskellPackages_.extend (self: super: {
+      cachix = self.callPackage ./cachix.nix {};
+      cachix-api = self.callPackage ./cachix-api.nix {};
 
       hercules-ci-api =
-        let basePkg = super.callCabal2nix "hercules-ci-api" (gitignoreSource ../hercules-ci-api) {};
-        in
-          buildFromSdist basePkg;
+        buildFromSdist 
+          (overrideSrc 
+            (self.callPackage ../hercules-ci-api/pkg.nix {})
+            { src = gitignoreSource ../hercules-ci-api; });
 
       hercules-ci-agent =
-        let basePkg = super.callCabal2nix
-                   "hercules-ci-agent"
-                   (gitignoreSource ../hercules-ci-agent)
-                   {
-                     nix-store = nix;
-                     nix-expr = nix;
-                     nix-main = nix;
-                     bdw-gc = pkgs.boehmgc;
-                   };
+        let basePkg = overrideSrc 
+                        (self.callPackage ../hercules-ci-agent/pkg.nix {
+                           nix-store = nix;
+                           nix-expr = nix;
+                           nix-main = nix;
+                           bdw-gc = pkgs.boehmgc;
+                        })
+                        { src = gitignoreSource ../hercules-ci-agent; };
+                   
         in
           buildFromSdist (overrideCabal (
             addBuildDepends
@@ -51,7 +49,7 @@ let
             postInstall = o.postInstall or "" + ''
               wrapProgram $out/bin/hercules-ci-agent --prefix PATH : ${makeBinPath [ pkgs.gnutar pkgs.gzip nix ]}
             '';
-            passthru = o.passthru // {
+            passthru = (o.passthru or {}) // {
               inherit nix;
             };
 
@@ -72,25 +70,34 @@ let
           }));
 
       hercules-ci-agent-test =
-        let basePkg = super.callCabal2nix "hercules-ci-agent-test" (cleanSource ../tests/agent-test) {};
-        in
-          buildFromSdist basePkg;
+        buildFromSdist 
+          (overrideSrc 
+            (self.callPackage ../tests/agent-test/pkg.nix {})
+            { src = gitignoreSource ../tests/agent-test; });
 
+      tomland =
+        self.callPackage ./haskell-tomland-1-0-1-0.nix {
+          hedgehog = self.hedgehog_1_0;
+          tasty-hedgehog = self.tasty-hedgehog_1_0;
+        };
+
+      hedgehog_1_0 =
+        self.callPackage ./haskell-hedgehog-1-0.nix {};
+      tasty-hedgehog_1_0 =
+        self.callPackage ./haskell-tasty-hedgehog-1-0.nix { hedgehog = self.hedgehog_1_0; };
     });
 
     hercules-ci-api-swagger = pkgs.callPackage ../hercules-ci-api/swagger.nix { inherit (haskellPackages) hercules-ci-api; };
 
-    vmTest = pkgs.nixosTest or (import ./compat-nixosTest.nix pkgs);
-    agent-test-body = import ../tests/agent-test.nix;
     tests = recurseIntoAttrs {
-      agent-functional-test = vmTest (agent-test-body);
+      agent-functional-test = pkgs.nixosTest ../tests/agent-test.nix;
     };
   };
 in
 recurseIntoAttrs {
   inherit (internal.haskellPackages) hercules-ci-agent;
   inherit (internal) hercules-ci-api-swagger;
-  inherit (internal) tests;
+  tests = if pkgs.stdenv.isLinux then internal.tests else null;
 
   # Not traversed for derivations:
   inherit internal;

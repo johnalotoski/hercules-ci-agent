@@ -1,18 +1,23 @@
 {-# LANGUAGE DataKinds #-}
 {-# OPTIONS_GHC -fno-warn-missing-fields #-}
 module DummyApi
-  ( dummyEvalEndpoints
+  ( dummyBuildEndpoints
+  , dummyEvalEndpoints
   , dummyTasksEndpoints
-  , dummyAgentsEndpoints
+  , dummyLifeCycleEndpoints
   )
 where
 
 import           Servant.Server.Generic
 import           Hercules.API.Agent.Evaluate
+import           Hercules.API.Agent.Build
 import           Hercules.API.Agent.Tasks
-import           Hercules.API.Agents
+import           Hercules.API.Agent.LifeCycle
 
 -- Provide uninitialised API records without warnings
+
+dummyBuildEndpoints :: BuildAPI auth AsServer
+dummyBuildEndpoints = BuildAPI{}
 
 dummyEvalEndpoints :: EvalAPI auth AsServer
 dummyEvalEndpoints = EvalAPI{}
@@ -20,5 +25,5 @@ dummyEvalEndpoints = EvalAPI{}
 dummyTasksEndpoints :: TasksAPI auth AsServer
 dummyTasksEndpoints = TasksAPI{}
 
-dummyAgentsEndpoints :: AgentsAPI auth AsServer
-dummyAgentsEndpoints = AgentsAPI{}
+dummyLifeCycleEndpoints :: LifeCycleAPI auth AsServer
+dummyLifeCycleEndpoints = LifeCycleAPI{}
