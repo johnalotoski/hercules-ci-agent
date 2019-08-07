@@ -1,37 +1,38 @@
 { mkDerivation, async, base, base16-bytestring, base64-bytestring
-, bytestring, cachix-api, conduit, conduit-extra, cookie
-, cryptonite, dhall, directory, ed25519, fetchgit, filepath
+, bytestring, cachix-api, conduit, conduit-extra, containers
+, cookie, cryptonite, dhall, directory, ed25519, fetchgit, filepath
 , fsnotify, here, hspec, hspec-discover, http-client
-, http-client-tls, http-conduit, http-types, lzma-conduit
-, megaparsec, memory, mmorph, netrc, optparse-applicative, process
-, protolude, resourcet, retry, safe-exceptions, servant
-, servant-auth, servant-auth-client, servant-client
-, servant-client-core, servant-conduit, stdenv, temporary, text
-, unix, uri-bytestring, versions
+, http-client-tls, http-conduit, http-types, inline-c, inline-c-cpp
+, lzma-conduit, megaparsec, memory, mmorph, netrc, nix-main
+, nix-store, optparse-applicative, process, protolude, resourcet
+, retry, safe-exceptions, servant, servant-auth
+, servant-auth-client, servant-client, servant-client-core
+, servant-conduit, stdenv, temporary, text, unix, uri-bytestring
+, versions
 }:
 mkDerivation {
   pname = "cachix";
-  version = "0.2.0";
+  version = "0.2.1";
   src = fetchgit {
     url = "https://github.com/cachix/cachix";
-    sha256 = "046r64n9z1k6l2hndcfz7wawpqxhrvvfr5lwfzq63rqrdf0ja38i";
-    rev = "70a8673e15adf50833e5183cc4fd69cab35ba29d";
+    sha256 = "169cn7airf8kw2275ix0aradpips7cip1ki4qyv0rvarjgszri6k";
+    rev = "d4158f70be7f8b9cf01dd885c4adf1c101880f2f";
     fetchSubmodules = true;
   };
   postUnpack = "sourceRoot+=/cachix; echo source root reset to $sourceRoot";
   isLibrary = true;
   isExecutable = true;
-  enableSeparateDataOutput = true;
   libraryHaskellDepends = [
     async base base16-bytestring base64-bytestring bytestring
-    cachix-api conduit conduit-extra cookie cryptonite dhall directory
-    ed25519 filepath fsnotify here http-client http-client-tls
-    http-conduit http-types lzma-conduit megaparsec memory mmorph netrc
-    optparse-applicative process protolude resourcet retry
-    safe-exceptions servant servant-auth servant-auth-client
-    servant-client servant-client-core servant-conduit text unix
-    uri-bytestring versions
+    cachix-api conduit conduit-extra containers cookie cryptonite dhall
+    directory ed25519 filepath fsnotify here http-client
+    http-client-tls http-conduit http-types inline-c inline-c-cpp
+    lzma-conduit megaparsec memory mmorph netrc optparse-applicative
+    process protolude resourcet retry safe-exceptions servant
+    servant-auth servant-auth-client servant-client servant-client-core
+    servant-conduit text unix uri-bytestring versions
   ];
+  libraryPkgconfigDepends = [ nix-main nix-store ];
   executableHaskellDepends = [ base cachix-api ];
   executableToolDepends = [ hspec-discover ];
   testHaskellDepends = [
