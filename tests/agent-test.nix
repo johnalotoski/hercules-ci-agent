@@ -1,4 +1,4 @@
-{ pkgs, ...}:
+{ pkgs, ... }:
 let
   tarball = x: pkgs.runCommand "${x.name or "tarball"}.tar.gz" {
     inherit x;
@@ -7,7 +7,6 @@ let
   '';
 
   testdata = pkgs.runCommand "testdata" {} ''
-    set -x
     mkdir -p $out/testdata
     for p in ${./agent-test/testdata}/*; do
       ln -s $p $out/testdata/$(basename $p);
@@ -38,11 +37,11 @@ in
 
         systemd.services.hercules-ci-agent.serviceConfig.StartLimitBurst = lib.mkForce (agentStartTimeoutSec * 10);
         systemd.services.hercules-ci-agent.serviceConfig.RestartSec = lib.mkForce ("100ms");
-        virtualisation.diskSize = 2048;
+        virtualisation.diskSize = 4096;
       };
     };
     api = { ... }: {
-      networking.firewall.allowedTCPPorts = [80];
+      networking.firewall.allowedTCPPorts = [ 80 ];
       environment.systemPackages = [ pkgs.testSuitePkgs.hercules-ci-agent-packages.internal.haskellPackages.hercules-ci-agent-test ];
     };
   };
