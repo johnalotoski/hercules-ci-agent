@@ -19,7 +19,6 @@ in
 {
   imports = [
     ./common.nix
-    ./system-caches.nixos.nix
     ./deploy-keys.nix
   ];
 
@@ -40,12 +39,22 @@ in
       };
     };
 
-    systemd.paths.hercules-ci-agent = {
-      wantedBy = [ "herucles-ci-agent.service" ];
+    systemd.paths.hercules-ci-agent-restart-files = {
+      wantedBy = [ "hercules-ci-agent.service" ];
       pathConfig = {
-        PathChanged = [ cfg.secretsDirectory ];
+        Unit = "hercules-ci-agent-restarter.service";
+        PathChanged = [ cfg.effectiveConfig.clusterJoinTokenPath ] ++ lib.optional (cfg.effectiveConfig ? binaryCachesPath) cfg.effectiveConfig.binaryCachesPath;
       };
     };
+
+    systemd.services.hercules-ci-agent-restarter = {
+      serviceConfig.Type = "oneshot";
+      script = ''
+        systemctl restart hercules-ci-agent.service
+      '';
+    };
+
+    nix.trustedUsers = [ cfg.user ];
 
     users = mkIf (cfg.user == defaultUser) {
       users.hercules-ci-agent =
