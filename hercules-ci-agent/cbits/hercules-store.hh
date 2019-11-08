@@ -36,7 +36,7 @@ public:
 
 protected:
   virtual void queryPathInfoUncached(const Path & path,
-        Callback<std::shared_ptr<ValidPathInfo>> callback) override;
+        Callback<std::shared_ptr<ValidPathInfo>> callback) noexcept override;
 
 public:
 
@@ -88,8 +88,6 @@ public:
 
   virtual void syncWithGC() override;
 
-  virtual Roots findRoots() override;
-
   virtual void collectGarbage(const GCOptions & options, GCResults & results) override;
 
   virtual void optimiseStore() override;
@@ -133,6 +131,13 @@ public:
 
   virtual BuildResult buildDerivation(const Path & drvPath, const BasicDerivation & drv,
         BuildMode buildMode = bmNormal) override;
+
+  virtual void queryMissing(const PathSet& targets,
+                            PathSet& willBuild,
+                            PathSet& willSubstitute,
+                            PathSet& unknown,
+                            unsigned long long& downloadSize,
+                            unsigned long long& narSize) override;
 
   // Additions
 

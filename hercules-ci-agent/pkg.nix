@@ -7,6 +7,7 @@
 , bdw-gc
 , binary
 , binary-conduit
+, boost_context
 , bytestring
 , cachix
 , cachix-api
@@ -61,7 +62,7 @@
 }:
 mkDerivation {
   pname = "hercules-ci-agent";
-  version = "0.5.0";
+  version = "0.6.1";
   src = ./hercules-ci-agent;
   isLibrary = true;
   isExecutable = true;
@@ -145,6 +146,7 @@ mkDerivation {
     unordered-containers
     uuid
   ];
+  executableSystemDepends = [ boost_context ];
   executablePkgconfigDepends = [
     bdw-gc
     nix-expr

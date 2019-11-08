@@ -44,6 +44,7 @@ let
                         nix-expr = nix;
                         nix-main = nix;
                         bdw-gc = pkgs.boehmgc-hercules;
+                        boost_context = pkgs.boost;
                       }
                     ) { src = gitignoreSource ../hercules-ci-agent; };
 
@@ -57,7 +58,9 @@ let
                           postInstall =
                             o.postInstall or ""
                             + ''
-                              wrapProgram $out/bin/hercules-ci-agent --prefix PATH : ${makeBinPath [ pkgs.gnutar pkgs.gzip nix ]}
+                              wrapProgram $out/bin/hercules-ci-agent --prefix PATH : ${makeBinPath [ pkgs.gnutar pkgs.gzip pkgs.git nix ]}
+                              # TODO: worker should inherit from the agent, but can't find git without this
+                              wrapProgram $out/bin/hercules-ci-agent-worker --prefix PATH : ${makeBinPath [ pkgs.gnutar pkgs.gzip pkgs.git nix ]}
                             ''
                             ;
                           passthru =
@@ -115,6 +118,11 @@ let
                 );
 
               hnix-store-core = self.callPackage ./haskell-hnix-store-core.nix {};
+
+              servant-client-core =
+                if super.servant-client-core.version == "0.16"
+                then haskell.lib.appendPatch super.servant-client-core [ ./servant-client-core-0.16-redact-authorization-header.patch ]
+                else super.servant;
             }
         );
 
@@ -135,7 +143,17 @@ recurseIntoAttrs {
   inherit (internal) hercules-ci-api-swagger;
   tests = if pkgs.stdenv.isLinux then internal.tests else null;
   pre-commit-check =
-    (import sources.nix-pre-commit-hooks).run { src = gitignoreSource ../.; };
+    (import sources.nix-pre-commit-hooks).run {
+      src = ../.;
+      hooks = {
+        # TODO: hlint.enable = true;
+        ormolu.enable = true;
+        ormolu.excludes = [ "Hercules/Agent/Compat.hs" ];
+        shellcheck.enable = true;
+        nixpkgs-fmt.enable = true;
+        nixpkgs-fmt.excludes = [ "tests/agent-test/testdata/" ];
+      };
+    };
 
   # Not traversed for derivations:
   inherit internal;

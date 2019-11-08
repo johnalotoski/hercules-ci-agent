@@ -41,7 +41,7 @@ import qualified Hercules.Agent.Client
 import qualified Hercules.Agent.Config as Config
 import Hercules.Agent.Env
 import qualified Hercules.Agent.Evaluate.TraversalQueue as TraversalQueue
-import Hercules.Agent.Exception (defaultRetry)
+import Hercules.Agent.Exception (defaultRetry, quickRetry)
 import Hercules.Agent.Log
 import qualified Hercules.Agent.Nix as Nix
 import Hercules.Agent.Nix.RetrieveDerivationInfo
@@ -71,6 +71,9 @@ import System.Process
 
 eventLimit :: Int
 eventLimit = 50000
+
+pushEvalWorkers :: Int
+pushEvalWorkers = 16
 
 performEvaluation :: Task EvaluateTask.EvaluateTask -> App ()
 performEvaluation task' =
@@ -192,7 +195,7 @@ produceEvaluationTaskEvents task' writeToBatch = withWorkDir $ \tmpdir -> do
             paths <- liftIO $ readIORef allAttrPaths
             forM_ caches $ \cache -> do
               withNamedContext "cache" cache $ logLocM DebugS "Pushing drvs to cachix"
-              Agent.Cachix.push cache (toList paths)
+              Agent.Cachix.push cache (toList paths) pushEvalWorkers
               emit $ EvaluateEvent.PushedAll $ PushedAll.PushedAll {cache = cache}
           captureAttrDrvAndEmit msg = do
             case msg of
@@ -279,7 +282,7 @@ runEvalProcess projectDir file autoArguments nixPath emit derivationQueue flush 
                             caches <- Agent.Cachix.activePushCaches
                             forM_ caches $ \cache -> do
                               withNamedContext "cache" cache $ logLocM DebugS "Pushing ifd drvs to cachix"
-                              Agent.Cachix.push cache [drv]
+                              Agent.Cachix.push cache [drv] pushEvalWorkers
                       Async.Lifted.concurrently_ submitDerivationInfos pushDerivations
                       emit $ EvaluateEvent.BuildRequest BuildRequest.BuildRequest {BuildRequest.derivationPath = drv}
                       flush
@@ -345,22 +348,24 @@ fetchSource targetDir url = do
   request <- HTTP.Simple.parseRequest $ toS url
   -- TODO: report stderr to service
   -- TODO: discard stdout
-  (x, _, _) <-
-    liftIO
-      $ (`runReaderT` Servant.Client.manager clientEnv)
-      $ HTTP.Conduit.withResponse request
-      $ \response -> do
-        let tarball = HTTP.Conduit.responseBody response
-            procSpec =
-              (System.Process.proc "tar" ["-xz"]) {cwd = Just targetDir}
-        sourceProcessWithStreams procSpec
-          tarball
-          Conduit.stderrC
-          Conduit.stderrC
-  case x of
-    ExitSuccess -> pass
-    ExitFailure {} -> throwIO $ SubprocessFailure "Extracting tarball"
-  liftIO $ findTarballDir targetDir
+  -- Fewer retries in order to speed up the tests.
+  quickRetry $ do
+    (x, _, _) <-
+      liftIO
+        $ (`runReaderT` Servant.Client.manager clientEnv)
+        $ HTTP.Conduit.withResponse request
+        $ \response -> do
+          let tarball = HTTP.Conduit.responseBody response
+              procSpec =
+                (System.Process.proc "tar" ["-xz"]) {cwd = Just targetDir}
+          sourceProcessWithStreams procSpec
+            tarball
+            Conduit.stderrC
+            Conduit.stderrC
+    case x of
+      ExitSuccess -> pass
+      ExitFailure {} -> throwIO $ SubprocessFailure "Extracting tarball"
+    liftIO $ findTarballDir targetDir
 
 dup :: a -> (a, a)
 dup a = (a, a)

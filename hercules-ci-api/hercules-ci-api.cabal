@@ -49,6 +49,7 @@ library
       Hercules.API.Agents.FullClusterJoinToken
       Hercules.API.Attribute
       Hercules.API.Auth
+      Hercules.API.BillingStatus
       Hercules.API.Build
       Hercules.API.Build.EvaluationDependency
       Hercules.API.Build.EvaluationDetail
@@ -61,11 +62,15 @@ library
       Hercules.API.Logs
       Hercules.API.Message
       Hercules.API.Name
+      Hercules.API.Organizations
+      Hercules.API.Organizations.Organization
+      Hercules.API.Organizations.CreateOrganization
       Hercules.API.Orphans
       Hercules.API.Prelude
       Hercules.API.Projects
       Hercules.API.Projects.CreateProject
       Hercules.API.Projects.Job
+      Hercules.API.Projects.PatchProject
       Hercules.API.Projects.Project
       Hercules.API.Repos
       Hercules.API.Repos.Repo
