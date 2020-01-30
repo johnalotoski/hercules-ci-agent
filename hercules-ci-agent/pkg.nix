@@ -17,7 +17,8 @@
 , directory
 , exceptions
 , filepath
-, hercules-ci-api
+, hercules-ci-api-agent
+, hercules-ci-api-core
 , hostname
 , hspec
 , http-client
@@ -62,7 +63,7 @@
 }:
 mkDerivation {
   pname = "hercules-ci-agent";
-  version = "0.6.1";
+  version = "0.6.2";
   src = ./hercules-ci-agent;
   isLibrary = true;
   isExecutable = true;
@@ -108,7 +109,8 @@ mkDerivation {
     directory
     exceptions
     filepath
-    hercules-ci-api
+    hercules-ci-api-agent
+    hercules-ci-api-core
     hostname
     http-client
     http-client-tls
@@ -164,7 +166,8 @@ mkDerivation {
     conduit
     containers
     exceptions
-    hercules-ci-api
+    hercules-ci-api-agent
+    hercules-ci-api-core
     hspec
     katip
     lifted-async

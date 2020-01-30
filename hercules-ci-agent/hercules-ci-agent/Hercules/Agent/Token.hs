@@ -7,12 +7,11 @@ import qualified Data.ByteString.Base64.Lazy as B64L
 import qualified Data.ByteString.Lazy as BL
 import qualified Data.Text as T
 import qualified Hercules.API.Agent.LifeCycle
-import qualified Hercules.API.Agents.CreateAgentSession_V2 as CreateAgentSession
+import qualified Hercules.API.Agent.LifeCycle.CreateAgentSession_V2 as CreateAgentSession
 import Hercules.Agent.Client (lifeCycleClient)
 import Hercules.Agent.Config (baseDirectory)
 import Hercules.Agent.Env as Env
 import qualified Hercules.Agent.EnvironmentInfo as EnvironmentInfo
-import Hercules.Agent.Exception
 import Hercules.Agent.Log
 import Hercules.Error
 import Protolude
@@ -64,10 +63,9 @@ ensureAgentSession = readAgentSessionKey >>= \case
       logLocM DebugS $ "Found sessionClusterJoinTokenId " <> show scjt
       if cjt == scjt
         then pure sessKey
-        else
-          do
-            logLocM DebugS "Getting new session key to match cluster join token..."
-            updateAgentSession
+        else do
+          logLocM DebugS "Getting new session key to match cluster join token..."
+          updateAgentSession
   Nothing -> do
     writeAgentSessionKey "x" -- Sanity check
     logLocM DebugS "Creating agent session"
@@ -94,11 +92,11 @@ createAgentSession = do
   let createAgentBody =
         CreateAgentSession.CreateAgentSession {agentInfo = agentInfo}
   token <- asks Env.currentToken
-  runHerculesClient'
-    $ Hercules.API.Agent.LifeCycle.agentSessionCreate
-        lifeCycleClient
-        createAgentBody
-        token
+  runHerculesClient' $
+    Hercules.API.Agent.LifeCycle.agentSessionCreate
+      lifeCycleClient
+      createAgentBody
+      token
 
 -- TODO: Although this looks nice, the implicit limitation here is that we can
 --       only have one token at a time. I wouldn't be surprised if this becomes

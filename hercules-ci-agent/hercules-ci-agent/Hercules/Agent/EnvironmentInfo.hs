@@ -2,17 +2,17 @@ module Hercules.Agent.EnvironmentInfo where
 
 import Control.Lens
   ( (^..),
-    to
-    )
+    to,
+  )
 import qualified Data.Aeson as Aeson
 import Data.Aeson.Lens
   ( _Array,
     _String,
-    key
-    )
+    key,
+  )
 import Data.Char (isSpace)
 import qualified Data.Text as T
-import qualified Hercules.API.Agents.AgentInfo as AgentInfo
+import qualified Hercules.API.Agent.LifeCycle.AgentInfo as AgentInfo
 import Hercules.Agent.CabalInfo as CabalInfo
 import Hercules.Agent.Cachix.Info as Cachix.Info
 import qualified Hercules.Agent.Config as Config
@@ -37,7 +37,7 @@ extractAgentInfo = do
           systemFeatures = nixSystemFeatures nix,
           substituters = nixSubstituters nix, -- TODO: Add cachix substituters
           concurrentTasks = fromIntegral concurrentTasks
-          }
+        }
   logLocM DebugS $ "Determined environment info: " <> show s
   pure s
 
@@ -48,7 +48,7 @@ data NixInfo
         nixSystemFeatures :: [Text],
         nixSubstituters :: [Text],
         nixTrustedPublicKeys :: [Text]
-        }
+      }
 
 getNixInfo :: IO NixInfo
 getNixInfo = do
@@ -69,7 +69,7 @@ getNixInfo = do
                  . _Array
                  . traverse
                  . _String
-               ),
+             ),
       nixSystemFeatures =
         cfg
           ^.. key "system-features"
@@ -93,7 +93,7 @@ getNixInfo = do
           . traverse
           . _String
           . to cleanUrl
-      }
+    }
 
 cleanUrl :: Text -> Text
 cleanUrl t | "@" `T.isInfixOf` t = "<URI censored; might contain secret>"

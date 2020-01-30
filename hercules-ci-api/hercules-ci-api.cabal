@@ -1,102 +1,95 @@
-cabal-version: 1.12
-
-name:           hercules-ci-api
-version:        0.4.0.0
-homepage:       https://github.com/hercules-ci/hercules-ci-agent#readme
-bug-reports:    https://github.com/hercules-ci/hercules-ci-agent/issues
-author:         Hercules Labs
-maintainer:     info@hercules-ci.com
-copyright:      2018-2019 Hercules Labs OÜ
-license:        Apache-2.0
-build-type:     Simple
-extra-source-files:
-    CHANGELOG.md
+cabal-version:      1.12
+name:               hercules-ci-api
+version:            0.5.0.0
+homepage:           https://github.com/hercules-ci/hercules-ci-agent#readme
+bug-reports:        https://github.com/hercules-ci/hercules-ci-agent/issues
+author:             Hercules Labs
+maintainer:         info@hercules-ci.com
+copyright:          2018-2019 Hercules Labs OÜ
+license:            Apache-2.0
+build-type:         Simple
+extra-source-files: CHANGELOG.md
 
 source-repository head
-  type: git
+  type:     git
   location: https://github.com/hercules-ci/hercules-ci
 
 library
   exposed-modules:
-      Hercules.API
-      Hercules.API.Accounts
-      Hercules.API.Accounts.Account
-      Hercules.API.Agent.Build
-      Hercules.API.Agent.Build.BuildEvent
-      Hercules.API.Agent.Build.BuildEvent.Pushed
-      Hercules.API.Agent.Build.BuildEvent.OutputInfo
-      Hercules.API.Agent.Build.BuildTask
-      Hercules.API.Agent.Evaluate
-      Hercules.API.Agent.Evaluate.EvaluateEvent
-      Hercules.API.Agent.Evaluate.EvaluateEvent.AttributeErrorEvent
-      Hercules.API.Agent.Evaluate.EvaluateEvent.AttributeEvent
-      Hercules.API.Agent.Evaluate.EvaluateEvent.DerivationInfo
-      Hercules.API.Agent.Evaluate.EvaluateEvent.PushedAll
-      Hercules.API.Agent.Evaluate.EvaluateEvent.BuildRequest
-      Hercules.API.Agent.Evaluate.EvaluateEvent.BuildRequired
-      Hercules.API.Agent.Evaluate.EvaluateTask
-      Hercules.API.Agent.LifeCycle
-      Hercules.API.Agent.LifeCycle.StartInfo
-      Hercules.API.Agent.Tasks
-      Hercules.API.Agents
-      Hercules.API.Agents.AgentInfo
-      Hercules.API.Agents.AgentSession
-      Hercules.API.Agents.AgentSessionCreated
-      Hercules.API.Agents.ClusterJoinToken
-      Hercules.API.Agents.CreateAgentSession
-      Hercules.API.Agents.CreateAgentSession_V2
-      Hercules.API.Agents.CreateClusterJoinToken
-      Hercules.API.Agents.FullClusterJoinToken
-      Hercules.API.Attribute
-      Hercules.API.Auth
-      Hercules.API.BillingStatus
-      Hercules.API.Build
-      Hercules.API.Build.EvaluationDependency
-      Hercules.API.Build.EvaluationDetail
-      Hercules.API.Build.FailureGraph
-      Hercules.API.Derivation
-      Hercules.API.Evaluation.Evaluation
-      Hercules.API.Evaluation.AttributeError
-      Hercules.API.Health
-      Hercules.API.Id
-      Hercules.API.Logs
-      Hercules.API.Message
-      Hercules.API.Name
-      Hercules.API.Organizations
-      Hercules.API.Organizations.Organization
-      Hercules.API.Organizations.CreateOrganization
-      Hercules.API.Orphans
-      Hercules.API.Prelude
-      Hercules.API.Projects
-      Hercules.API.Projects.CreateProject
-      Hercules.API.Projects.Job
-      Hercules.API.Projects.PatchProject
-      Hercules.API.Projects.Project
-      Hercules.API.Repos
-      Hercules.API.Repos.Repo
-      Hercules.API.Result
-      Hercules.API.Servant
-      Hercules.API.SourceHostingSite.SourceHostingSite
-      Hercules.API.Task
-      Hercules.API.TaskEvent
-      Hercules.API.TaskState
-      Hercules.API.TaskStatus
-      Hercules.Error
-      Hercules.Formats.Common
-      Hercules.Formats.CachixCache
-      Hercules.Frontend
-  hs-source-dirs:
-      src
-  default-extensions: DeriveGeneric DeriveTraversable DisambiguateRecordFields FlexibleContexts InstanceSigs LambdaCase MultiParamTypeClasses NoImplicitPrelude OverloadedStrings RankNTypes TupleSections TypeApplications TypeOperators
-  ghc-options: -Wall -fwarn-tabs -fwarn-unused-imports -fwarn-missing-signatures -fwarn-name-shadowing -fwarn-incomplete-patterns
+    Hercules.API
+    Hercules.API.Accounts
+    Hercules.API.Accounts.Account
+    Hercules.API.Accounts.AccountSettings
+    Hercules.API.Accounts.AccountSettingsPatch
+    Hercules.API.Agents
+    Hercules.API.Agents.AgentInfo
+    Hercules.API.Agents.AgentSession
+    Hercules.API.Agents.AgentSessionCreated
+    Hercules.API.Agents.ClusterJoinToken
+    Hercules.API.Agents.CreateClusterJoinToken
+    Hercules.API.Agents.FullClusterJoinToken
+    Hercules.API.Attribute
+    Hercules.API.Auth
+    Hercules.API.BillingStatus
+    Hercules.API.Build
+    Hercules.API.Build.DerivationEvent
+    Hercules.API.Build.DerivationInfo
+    Hercules.API.Build.DerivationInfo.DerivationInput
+    Hercules.API.Build.DerivationInfo.DerivationOutput
+    Hercules.API.Build.EvaluationDependency
+    Hercules.API.Build.EvaluationDetail
+    Hercules.API.Build.FailureGraph
+    Hercules.API.Derivation
+    Hercules.API.Evaluation.AttributeError
+    Hercules.API.Evaluation.Evaluation
+    Hercules.API.Health
+    Hercules.API.Message
+    Hercules.API.Organizations
+    Hercules.API.Organizations.CreateOrganization
+    Hercules.API.Organizations.Organization
+    Hercules.API.Organizations.PaymentLink
+    Hercules.API.Orphans
+    Hercules.API.Projects
+    Hercules.API.Projects.CreateProject
+    Hercules.API.Projects.Job
+    Hercules.API.Projects.PatchProject
+    Hercules.API.Projects.Project
+    Hercules.API.Repos
+    Hercules.API.Repos.Repo
+    Hercules.API.Result
+    Hercules.API.Servant.Status
+    Hercules.API.SourceHostingSite.SourceHostingSite
+    Hercules.Frontend
+
+  hs-source-dirs:     src
+  default-extensions:
+    NoImplicitPrelude
+    DeriveGeneric
+    DeriveTraversable
+    DisambiguateRecordFields
+    FlexibleContexts
+    InstanceSigs
+    LambdaCase
+    MultiParamTypeClasses
+    OverloadedStrings
+    RankNTypes
+    TupleSections
+    TypeApplications
+    TypeOperators
+
+  ghc-options:
+    -Wall -fwarn-tabs -fwarn-unused-imports -fwarn-missing-signatures
+    -fwarn-name-shadowing -fwarn-incomplete-patterns
+
   build-depends:
       aeson
-    , base >=4.7 && <5
+    , base                     >=4.7    && <5
     , bytestring
     , containers
     , cookie
     , exceptions
     , hashable
+    , hercules-ci-api-core
     , http-api-data
     , http-media
     , lens
@@ -104,7 +97,7 @@ library
     , memory
     , network-uri
     , profunctors
-    , servant >=0.14.1
+    , servant                  >=0.14.1
     , servant-auth
     , servant-auth-swagger
     , servant-swagger
@@ -114,72 +107,48 @@ library
     , text
     , time
     , uuid
-  default-language: Haskell2010
+
+  default-language:   Haskell2010
 
 executable hercules-gen-swagger
-  main-is: Main.hs
-  hs-source-dirs:
-      hercules-gen-swagger
-  default-extensions: DeriveGeneric DeriveTraversable DisambiguateRecordFields FlexibleContexts InstanceSigs LambdaCase MultiParamTypeClasses NoImplicitPrelude OverloadedStrings RankNTypes TupleSections TypeApplications TypeOperators
-  ghc-options: -Wall -fwarn-tabs -fwarn-unused-imports -fwarn-missing-signatures -fwarn-name-shadowing -fwarn-incomplete-patterns -threaded -rtsopts -with-rtsopts=-N
-  build-depends:
-      aeson
-    , base >=4.7 && <5
-    , bytestring
-    , containers
-    , cookie
-    , exceptions
-    , hashable
-    , hercules-ci-api
-    , http-api-data
-    , http-media
-    , lens
-    , memory
-    , network-uri
-    , profunctors
-    , servant >=0.14.1
-    , servant-auth
-    , servant-auth-swagger
-    , servant-swagger
-    , servant-swagger-ui-core
-    , string-conv
-    , swagger2
-    , text
-    , time
-    , uuid
-  default-language: Haskell2010
+  main-is:            Main.hs
+  hs-source-dirs:     hercules-gen-swagger
+  default-extensions:
+    NoImplicitPrelude
+    DeriveGeneric
+    DeriveTraversable
+    DisambiguateRecordFields
+    FlexibleContexts
+    InstanceSigs
+    LambdaCase
+    MultiParamTypeClasses
+    OverloadedStrings
+    RankNTypes
+    TupleSections
+    TypeApplications
+    TypeOperators
 
-test-suite hercules-api-test
-  type: exitcode-stdio-1.0
-  main-is: Main.hs
-  other-modules:
-      Spec
-      AesonSupport
-      Hercules.API.Agent.AgentInfoSpec
-      Hercules.API.Agent.Evaluate.EvaluateEvent.DerivationInfoSpec
-      Hercules.Formats.CachixCacheSpec
-  hs-source-dirs:
-      test
-  default-extensions: DeriveGeneric DeriveTraversable DisambiguateRecordFields FlexibleContexts InstanceSigs LambdaCase MultiParamTypeClasses NoImplicitPrelude OverloadedStrings RankNTypes TupleSections TypeApplications TypeOperators
-  ghc-options: -Wall -fwarn-tabs -fwarn-unused-imports -fwarn-missing-signatures -fwarn-name-shadowing -fwarn-incomplete-patterns -threaded -rtsopts -with-rtsopts=-N
+  ghc-options:
+    -Wall -fwarn-tabs -fwarn-unused-imports -fwarn-missing-signatures
+    -fwarn-name-shadowing -fwarn-incomplete-patterns -threaded -rtsopts
+    -with-rtsopts=-N
+
   build-depends:
       aeson
-    , base >=4.7 && <5
+    , base                     >=4.7    && <5
     , bytestring
     , containers
     , cookie
     , exceptions
     , hashable
     , hercules-ci-api
-    , hspec
     , http-api-data
     , http-media
     , lens
     , memory
     , network-uri
-    , QuickCheck
     , profunctors
-    , servant >=0.14.1
+    , servant                  >=0.14.1
     , servant-auth
     , servant-auth-swagger
     , servant-swagger
@@ -189,4 +158,5 @@ test-suite hercules-api-test
     , text
     , time
     , uuid
-  default-language: Haskell2010
+
+  default-language:   Haskell2010

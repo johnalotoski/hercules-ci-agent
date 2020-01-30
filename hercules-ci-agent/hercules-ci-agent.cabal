@@ -1,7 +1,7 @@
 cabal-version: 2.4
 
 name:           hercules-ci-agent
-version:        0.6.1
+version:        0.6.2
 homepage:       https://docs.hercules-ci.com
 bug-reports:    https://github.com/hercules-ci/hercules-ci-agent/issues
 author:         Hercules Labs
@@ -91,7 +91,6 @@ executable hercules-ci-agent
       Hercules.Agent.EnvironmentInfo
       Hercules.Agent.Evaluate
       Hercules.Agent.Evaluate.TraversalQueue
-      Hercules.Agent.Exception
       Hercules.Agent.Init
       Hercules.Agent.Log
       Hercules.Agent.Nix
@@ -126,7 +125,8 @@ executable hercules-ci-agent
     , exceptions
     , filepath
     , hercules-ci-agent
-    , hercules-ci-api == 0.4.*
+    , hercules-ci-api-core == 0.1.*
+    , hercules-ci-api-agent == 0.1.*
     , hostname
     , http-client
     , http-client-tls
@@ -211,8 +211,8 @@ executable hercules-ci-agent-worker
     , conduit
     , containers
     , exceptions
-    , hercules-ci-api
     , hercules-ci-agent
+    , hercules-ci-api-agent
     , internal-ffi
     , inline-c
     , inline-c-cpp
@@ -259,7 +259,8 @@ test-suite hercules-test
     , conduit
     , containers
     , exceptions
-    , hercules-ci-api
+    , hercules-ci-api-agent
+    , hercules-ci-api-core
     , hspec
     , katip
     , lifted-async

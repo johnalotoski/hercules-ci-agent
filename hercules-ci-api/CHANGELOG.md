@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0.0] - 2020-01-30
+
+### Changed
+
+- `hercules-ci-api-core` and `hercules-ci-api-agent` packages have been extracted.
+
+### Added
+
+- Account settings
+- Project enable/disable
+- Some authorization-related fields
+- Billing
+- Derivation info and events
+- Job derivation statistics and improved status reporting
+- Derivation and Job restarts
+- Job cancellation
+
 ## [0.4.0.0] - 2019-08-30
 
 ### Fixed

@@ -11,6 +11,7 @@ let
   inherit (pkgs.lib) cleanSource makeBinPath optionalAttrs;
   inherit (haskell.lib) overrideSrc addBuildDepends overrideCabal buildFromSdist doJailbreak disableLibraryProfiling addBuildTool;
   inherit (import sources.gitignore { inherit lib; }) gitignoreSource;
+  callPkg = super: name: srcPath: args: overrideSrc (super.callPackage (srcPath + "/pkg.nix") args) { src = gitignoreSource srcPath; };
 
   sources = import ./sources.nix;
 
@@ -30,23 +31,20 @@ let
                 );
               cachix-api = self.callPackage ./cachix-api.nix {};
 
-              hercules-ci-api =
-                buildFromSdist (
-                  overrideSrc (self.callPackage ../hercules-ci-api/pkg.nix {}) { src = gitignoreSource ../hercules-ci-api; }
-                );
+              hercules-ci-api = callPkg super "hercules-ci-api" ../hercules-ci-api {};
+              hercules-ci-api-agent = callPkg super "hercules-ci-api-agent" ../hercules-ci-api-agent {};
+              hercules-ci-api-core = callPkg super "hercules-ci-api-core" ../hercules-ci-api-core {};
 
               hercules-ci-agent =
                 let
                   basePkg =
-                    overrideSrc (
-                      self.callPackage ../hercules-ci-agent/pkg.nix {
-                        nix-store = nix;
-                        nix-expr = nix;
-                        nix-main = nix;
-                        bdw-gc = pkgs.boehmgc-hercules;
-                        boost_context = pkgs.boost;
-                      }
-                    ) { src = gitignoreSource ../hercules-ci-agent; };
+                    callPkg super "hercules-ci-agent" ../hercules-ci-agent {
+                      nix-store = nix;
+                      nix-expr = nix;
+                      nix-main = nix;
+                      bdw-gc = pkgs.boehmgc-hercules;
+                      boost_context = pkgs.boost;
+                    };
 
                 in
                   buildFromSdist (
@@ -62,13 +60,13 @@ let
                               # TODO: worker should inherit from the agent, but can't find git without this
                               wrapProgram $out/bin/hercules-ci-agent-worker --prefix PATH : ${makeBinPath [ pkgs.gnutar pkgs.gzip pkgs.git nix ]}
                             ''
-                            ;
+                          ;
                           passthru =
                             (o.passthru or {})
                             // {
-                                 inherit nix;
-                               }
-                            ;
+                              inherit nix;
+                            }
+                          ;
 
                           # TODO: We had an issue where any overrideCabal would have
                           #       no effect on the package, so we inline the
@@ -90,9 +88,7 @@ let
                   );
 
               hercules-ci-agent-test =
-                buildFromSdist (
-                  overrideSrc (self.callPackage ../tests/agent-test/pkg.nix {}) { src = gitignoreSource ../tests/agent-test; }
-                );
+                callPkg super "hercules-ci-agent-test" ../tests/agent-test {};
 
               tomland =
                 self.callPackage ./haskell-tomland-1-0-1-0.nix {
@@ -119,10 +115,6 @@ let
 
               hnix-store-core = self.callPackage ./haskell-hnix-store-core.nix {};
 
-              servant-client-core =
-                if super.servant-client-core.version == "0.16"
-                then haskell.lib.appendPatch super.servant-client-core [ ./servant-client-core-0.16-redact-authorization-header.patch ]
-                else super.servant;
             }
         );
 
@@ -143,8 +135,11 @@ recurseIntoAttrs {
   inherit (internal) hercules-ci-api-swagger;
   tests = if pkgs.stdenv.isLinux then internal.tests else null;
   pre-commit-check =
-    (import sources.nix-pre-commit-hooks).run {
+    (import sources."pre-commit-hooks.nix").run {
       src = ../.;
+      tools = {
+        inherit (pkgs) ormolu;
+      };
       hooks = {
         # TODO: hlint.enable = true;
         ormolu.enable = true;
@@ -153,6 +148,7 @@ recurseIntoAttrs {
         nixpkgs-fmt.enable = true;
         nixpkgs-fmt.excludes = [ "tests/agent-test/testdata/" ];
       };
+      settings.ormolu.defaultExtensions = [ "TypeApplications" ];
     };
 
   # Not traversed for derivations:

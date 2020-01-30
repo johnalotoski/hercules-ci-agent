@@ -2,10 +2,13 @@
 
 module Hercules.API.Accounts.Account where
 
-import qualified Hercules.API.BillingStatus as BillingStatus
+import qualified Hercules.API.Organizations.Organization as Organization
 import Hercules.API.Prelude
 
 data AccountType = User | Organization
+  deriving (Generic, Show, Eq, ToJSON, FromJSON, ToSchema)
+
+data MembershipRole = Member | Admin
   deriving (Generic, Show, Eq, ToJSON, FromJSON, ToSchema)
 
 data Account
@@ -16,9 +19,8 @@ data Account
         typ :: AccountType,
         displayName :: Text,
         imageURL :: Text,
-        billingStatus :: Maybe BillingStatus.BillingStatus,
-        isInstalled :: Bool,
-        -- ^ Whether Hercules CI is installed on this account as an App.
+        organization :: Maybe Organization.Organization,
+        -- | Whether Hercules CI is installed on this account as an App.
         --
         -- An account that does not have an installation can not be
         -- properly accessed by Hercules, but may be visible nonetheless
@@ -28,9 +30,10 @@ data Account
         -- user signs in for the first time via OAuth, until they decide
         -- to install it on their GitHub user. Another example is GitHub
         -- organizations that don't have an installation yet.
-        --
-        isInstallable :: Bool
-        -- ^ Whether the current user has permission in the to installing
+        isInstalled :: Bool,
+        -- | Whether the current user has permission in the to installing
         -- Hercules CI on this account.
-        }
+        isInstallable :: Bool,
+        membershipRole :: Maybe MembershipRole
+      }
   deriving (Generic, Show, Eq, ToJSON, FromJSON, ToSchema)
