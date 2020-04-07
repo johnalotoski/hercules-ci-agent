@@ -20,6 +20,7 @@
         "rev": "f9e996052b5af4032fe6150bba4a6fe4f7b9d698",
         "sha256": "0jrh5ghisaqdd0vldbywags20m2cxpkbbk5jjjmwaw0gr8nhsafv",
         "type": "tarball",
+        "builtin": false,
         "url": "https://github.com/hercules-ci/gitignore/archive/f9e996052b5af4032fe6150bba4a6fe4f7b9d698.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
